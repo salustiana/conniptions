@@ -111,12 +111,12 @@ body {
   font-weight: 700;
   /* Sepia-toned background */
   background: #f5f0e8;
-  font-size: 1.1rem;
+  font-size: clamp(0.75rem, 3.5vw, 1.1rem);
   letter-spacing: 0.1px;
   text-transform: uppercase;
   transition: background 0.2s, color 0.2s, transform 0.05s;
-  word-wrap: break-word;
-  overflow-wrap: anywhere;
+  word-wrap: normal;
+  overflow-wrap: normal;
 }
 
 .word-card:hover {
