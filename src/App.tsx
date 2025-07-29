@@ -17,6 +17,8 @@ const App: React.FC = () => {
   const [selected, setSelected] = useState<string[]>([]);
   const [mistakes, setMistakes] = useState(0);
   const [shakeWords, setShakeWords] = useState<string[]>([]);
+  const [toast, setToast] = useState<string | null>(null);
+  const [guesses, setGuesses] = useState<Set<string>>(new Set());
   const allWords = useMemo(
     () => todaysPuzzle.groups.flatMap((g) => g.words),
     []
@@ -47,17 +49,51 @@ const App: React.FC = () => {
 
   const submit = () => {
     if (selected.length !== 4) return;
+
+    // normalize guess to unordered key
+    const guessKey = [...selected].sort().join("|");
+    if (guesses.has(guessKey)) {
+      setToast("Already guessed");
+      // hide after 1.5s
+      setTimeout(() => setToast(null), 1500);
+      return;
+    }
+
+    // store this new guess
+    setGuesses((prev) => {
+      const next = new Set(prev);
+      next.add(guessKey);
+      return next;
+    });
+
     const found = todaysPuzzle.groups.find((g) => arraysEqual(g.words, selected));
     if (found && !solved.includes(found)) {
       setSolved([...solved, found]);
       setSelected([]);
       // remove words implicitly via solved state effect
     } else {
-      setMistakes(mistakes + 1);
-      setShakeWords(selected);
-      setSelected([]);
-      // clear shake after animation duration
-      setTimeout(() => setShakeWords([]), 500);
+      // check if guess is "one away" (3 out of 4 words belong to the same group)
+      const oneAway = todaysPuzzle.groups.some((g) => {
+        const matches = selected.filter((w) => g.words.includes(w)).length;
+        return matches === 3;
+      });
+
+      if (oneAway) {
+        const nextMistakes = mistakes + 1;
+        const willLose = nextMistakes >= MAX_MISTAKES;
+        setMistakes(nextMistakes);
+        if (!willLose) {
+          setToast("One away...");
+          // hide toast after 1.5s
+          setTimeout(() => setToast(null), 1500);
+        }
+        // keep selection so the player can adjust (or see final attempt)
+      } else {
+        setMistakes(mistakes + 1);
+        setShakeWords(selected);
+        // clear shake after animation duration
+        setTimeout(() => setShakeWords([]), 500);
+      }
     }
   };
 
@@ -70,62 +106,71 @@ const App: React.FC = () => {
   const lost = mistakes >= MAX_MISTAKES;
   const won = solved.length === todaysPuzzle.groups.length;
 
+  // groups to render above grid; if lost, show every category in order of difficulty
+  const groupsToShow = (lost ? todaysPuzzle.groups : solved)
+    .slice()
+    .sort((a, b) => (a.difficulty ?? 0) - (b.difficulty ?? 0));
+
   return (
     <div>
-      <h1 className="header">Conniptions</h1>
+      {toast && <div className="toast">{toast}</div>}
+      <header className="top-bar">
+        <h1 className="title">Conniptions</h1>
+        {todaysPuzzle.date && <span className="date">{todaysPuzzle.date}</span>}
+      </header>
+      <p className="subtitle">Create four groups of four!</p>
 
-      {solved
-        .slice()
-        .sort((a, b) => a.difficulty - b.difficulty)
-        .map((g) => (
+      <div className="game-core">
+        {groupsToShow.map((g) => (
           <div key={g.name} className={`solved-group solved-${g.difficulty}`}>
             <div className="group-name">{g.name}</div>
             <div className="group-words">{g.words.join(", ")}</div>
           </div>
         ))}
 
-      {!won && !lost && (
-        <div className="grid">
-          {order.map((word) => (
-            <WordCard
-              key={word}
-              text={word}
-              selected={selected.includes(word)}
-              solved={false}
-              shake={shakeWords.includes(word)}
-              onClick={() => toggleWord(word)}
-            />
-          ))}
+        {!won && !lost && (
+          <div className="grid">
+            {order.map((word) => (
+              <WordCard
+                key={word}
+                text={word}
+                selected={selected.includes(word)}
+                solved={false}
+                shake={shakeWords.includes(word)}
+                onClick={() => toggleWord(word)}
+              />
+            ))}
+          </div>
+        )}
+
+        <div className="controls">
+          <button onClick={shuffle} disabled={won || lost}>Shuffle</button>
+          <button onClick={deselect} disabled={selected.length === 0 || won || lost}>
+            Deselect All
+          </button>
+          <button
+            onClick={submit}
+            disabled={selected.length !== 4 || won || lost}
+          >
+            Submit
+          </button>
         </div>
-      )}
 
-      <div className="controls">
-        <button onClick={shuffle} disabled={won || lost}>Shuffle</button>
-        <button onClick={deselect} disabled={selected.length === 0 || won || lost}>
-          Deselect All
-        </button>
-        <button
-          onClick={submit}
-          disabled={selected.length !== 4 || won || lost}
-        >
-          Submit
-        </button>
-      </div>
-
-      <div className="mistakes-wrapper">
-        <span className="mistakes-label">Mistakes Remaining:</span>
-        <div className="mistakes-dots">
-          {Array.from({ length: MAX_MISTAKES }, (_, i) => (
-            <span
-              key={i}
-              className={`dot ${i < MAX_MISTAKES - mistakes ? "active" : ""}`}
-            />
-          ))}
+        <div className="mistakes-wrapper">
+          <span className="mistakes-label">Mistakes Remaining:</span>
+          <div className="mistakes-dots">
+            {Array.from({ length: MAX_MISTAKES }, (_, i) => (
+              <span
+                key={i}
+                className={`dot ${i < MAX_MISTAKES - mistakes ? "active" : ""}`}
+              />
+            ))}
+          </div>
         </div>
-      </div>
 
-      {lost && <h2>You lost! Refresh to play again.</h2>}
-      {won && <h2>Congratulations! You solved it.</h2>}
+        {lost && <h2>Disappointment.</h2>}
+        {won && <h2>Congratulation.</h2>}
+      </div>
     </div>
   );
 };

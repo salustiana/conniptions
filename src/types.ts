@@ -6,4 +6,5 @@ export interface Group {
 
 export interface Puzzle {
   groups: Group[];
+  date?: string;
 } 

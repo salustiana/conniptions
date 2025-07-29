@@ -13,17 +13,44 @@ body {
   margin: 0;
   font-family: sans-serif;
   background: #fafafa;
-  display: flex;
-  justify-content: center;
+  margin-top: 5rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
 }
 
-/* Header */
-.header {
+/* Top bar */
+.top-bar {
+  position: absolute;
+  top: 1.5rem;
+  left: 2rem;
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+}
+
+.title {
   font-family: karnak-condensed;
-  font-size: 2rem;
-  font-weight: 700;
+  font-size: 2.25rem;
+  font-weight: 800;
+  margin: 0;
+  line-height: 1;
+}
+
+.date {
+  font-size: 1.25rem;
+  font-weight: 400;
+}
+
+.subtitle {
   text-align: center;
-  margin-bottom: 1.5rem;
+  font-size: 1.0rem;
+  font-weight: 400;
+  margin-bottom: 1.25rem;
+}
+
+.game-core {
+  max-width: 500px;
+  margin: 0 auto;
 }
 
 /* Solved group bars */
@@ -79,7 +106,7 @@ body {
 }
 
 .word-card:hover {
-  transform: scale(1.03);
+  transform: none;
 }
 
 .word-card.selected {
@@ -167,4 +194,31 @@ body {
 
 .mistakes-dots .dot.active {
   background: #333333;
+}
+
+/* Toast popup */
+.toast {
+  position: fixed;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #000;
+  color: #fff;
+  padding: 0.4rem 1.2rem;
+  border-radius: 4px;
+  font-weight: 600;
+  z-index: 1000;
+  opacity: 0;
+  animation: toastFade 0.6s ease-out forwards;
+}
+
+@keyframes toastFade {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
 } 
