@@ -1,0 +1,78 @@
+// ------
+// LAYOUT
+// ------
+
+$device-types: mobile desktop;
+
+// warning: do not add more breakpoints to this variable
+$grid-breakpoints: (
+  xs: 0,
+  // iPhone SE 2nd Gen + 1px
+  midsm: 376px,
+  sm: 444px,
+  // 300px modal + 50px padding + 5vw margin
+  md: 768px,
+  lg: 992px,
+  xl: 1200px,
+);
+
+$se-height: 668px;
+$se-height-3rd-gen: 547px;
+$se-width: 375px;
+
+$ipad-mini-height: 1024px;
+$ipad-mini-width: 768px;
+
+$galaxy-fold-height: 882px;
+$galaxy-fold-width: 344px;
+
+$galaxy-fold-height_unfolded: 960px;
+$galaxy-fold-width_unfolded: 769px;
+
+$galaxy-tab-A9-height: 1480px;
+$galaxy-tab-A9-width: 720px;
+
+$samsung-S9-height: 1078px;
+$samsung-S9-width: 674px;
+
+$samsung-S6-height: 1334px;
+$samsung-S6-width: 800px;
+
+$row-max-width-desktop: 1280px;
+$row-max-width-mobile: 460px;
+
+$gutter-col: 24px;
+$gutter-page-desktop: 36px;
+$gutter-page-mobile: 12px;
+
+$nav-height-desktop: 56px;
+$nav-height-mobile: 48px;
+$messaging-banner-height: 44px;
+
+$z-index-nav: 100;
+
+// XWD Gameplay page elements
+$phone-keyboard-height: 120px;
+$tablet-keyboard-height: 256px;
+$mobile-clue-bar-height: 48px;
+$desktop-clue-bar-height: 60px;
+
+// XWD Gameplay page breakpoints
+$puzzle-header-max-width: 1132px;
+$puzzle-body-max-width: 1132px;
+$puzzle-toolbar-max-width: 1605px;
+$note-content-max-width: 580px;
+$print-button-max-width: 264px;
+
+// XWD Header and Toolbar
+$mobile-header-height: 45px;
+$desktop-header-height: 65px;
+$free-preview-bannerheight: 44px;
+$free-preview-bannermobile: 68px;
+$free-preview-bannermobile-landscape: 33px;
+
+// XWD Keyboard
+$tablet-keyboard-height-landscape: 250px;
+$tablet-keyboard-height-portrait: 300px;
+
+$breathing-room: 10px;

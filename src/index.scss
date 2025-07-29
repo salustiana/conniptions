@@ -1,0 +1,57 @@
+@use "../resources/colors.scss" as *;
+@use "../resources/variables.scss" as *;
+@use "../resources/spacing.scss" as *;
+@use "../resources/mixins.scss" as *;
+@use "../resources/fonts.scss" as *;
+
+/* Local Franklin font files */
+@font-face {
+  font-family: "karnak-condensed";
+  src: url("../resources/karnakcondensed-normal-700.woff2") format("woff2");
+  font-weight: 700;
+  font-style: condensed;
+  font-display: swap;
+}
+@font-face {
+  font-family: "nyt-franklin";
+  src: url("../resources/franklin-normal-300.woff2") format("woff2");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "nyt-franklin";
+  src: url("../resources/franklin-normal-400.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "nyt-franklin";
+  src: url("../resources/franklin-normal-500.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "nyt-franklin";
+  src: url("../resources/franklin-normal-600.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "nyt-franklin";
+  src: url("../resources/franklin-normal-700.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Existing project styles */
+@import "./index.css";
+
+/* Override fonts to use Franklin (matches example) */
+body {
+  font-family: nyt-franklin;
+} 

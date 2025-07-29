@@ -1,0 +1,57 @@
+/**
+* MIXIN CONFIG
+* See foundation/scss/fonts for mixin creation
+*/
+$fonts: (
+  cheltenham: (
+    normal: 300 500,
+  ),
+  franklin: (
+    normal: 300 400 500 600 700 800,
+    italic: 500,
+  ),
+  franklin-cw: (
+    normal: 400 500,
+  ),
+  karnak: (
+    normal: 400 500 600 700,
+  ),
+  karnakcondensed: (
+    normal: 700,
+  ),
+  stymie: (
+    normal: 500 700 800,
+  ),
+  inter: (
+    normal: 600,
+  ),
+);
+
+/**
+* VARIABLES
+*/
+$franklin-md: nyt-franklin, Arial;
+$franklin: nyt-franklin, Arial;
+$franklin-hd: nyt-franklin, Arial;
+$franklin-cw: nyt-franklin-cw, Arial;
+$stymie: nyt-stymie, Georgia;
+$stymie-md: nyt-stymie, Georgia;
+$cheltenham: nyt-cheltenham, Georgia;
+$karnak: nyt-karnak, Georgia;
+$karnak-condensed: nyt-karnakcondensed, Georgia;
+$inter: nyt-inter, Serif;
+
+$weight-extra-light: 200; // C
+$weight-light: 300; // CF
+$weight-book: 400; // C
+$weight-medium: 500; // CFW
+$weight-medium-bold: 600; // F
+$weight-bold: 700; // CF
+$weight-extra-bold: 800; // CF
+$weight-headline: 900; // F
+
+/**
+* BASE FONT STACKS
+*/
+$font-serif-base: georgia, 'times new roman', times, serif;
+$font-sans-base: arial, helvetica, sans-serif;

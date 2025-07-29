@@ -1,0 +1,431 @@
+@use 'sass:math';
+
+@use './variables' as *;
+
+// -----------------
+// RESPONSIVE MIXINS
+// -----------------
+// The width mixins are taken directly from bootstrap (because they have great mixins!)
+// @see https://github.com/twbs/bootstrap/blob/v4-dev/scss/mixins/_breakpoints.scss
+
+// Name of the next breakpoint, or null for the last breakpoint.
+@function breakpoint-next(
+  $name,
+  $breakpoints: $grid-breakpoints,
+  $breakpoint-names: map-keys($breakpoints)
+) {
+  $n: index($breakpoint-names, $name);
+  @return if(
+    $n < length($breakpoint-names),
+    nth($breakpoint-names, $n + 1),
+    null
+  );
+}
+
+// Minimum breakpoint width. Null for the smallest (first) breakpoint.
+@function breakpoint-min($name, $breakpoints: $grid-breakpoints) {
+  $min: map-get($breakpoints, $name);
+  @return if($min != 0, $min, null);
+}
+
+// Returns a blank string if smallest breakpoint, otherwise returns the name with a dash infront.
+// Useful for making responsive utilities.
+//
+//    >> breakpoint-infix(xs, (xs: 0, sm: 576px, md: 768px, lg: 992px, xl: 1200px))
+//    ""  (Returns a blank string)
+//    >> breakpoint-infix(sm, (xs: 0, sm: 576px, md: 768px, lg: 992px, xl: 1200px))
+//    "-sm"
+@function breakpoint-infix($name, $breakpoints: $grid-breakpoints) {
+  @return if(
+    breakpoint-min($name, $breakpoints) == null,
+    '',
+    '-#{$name}'
+  );
+}
+
+// Maximum breakpoint width. Null for the largest (last) breakpoint.
+// The maximum value is calculated as the minimum of the next one less 0.02px
+// to work around the limitations of `min-` and `max-` prefixes and viewports with fractional widths.
+// See https://www.w3.org/TR/mediaqueries-4/#mq-min-max
+// Uses 0.02px rather than 0.01px to work around a current rounding bug in Safari.
+// See https://bugs.webkit.org/show_bug.cgi?id=178261
+@function breakpoint-max($name, $breakpoints: $grid-breakpoints) {
+  $next: breakpoint-next($name, $breakpoints);
+  @return if(
+    $next,
+    breakpoint-min($next, $breakpoints) - 0.02px,
+    null
+  );
+}
+
+// Media of at least the minimum breakpoint width. No query for the smallest breakpoint.
+// Makes the @content apply to the given breakpoint and wider.
+@mixin view-width-min($name, $breakpoints: $grid-breakpoints) {
+  $min: breakpoint-min($name, $breakpoints);
+  @if $min {
+    @media (min-width: $min) {
+      @content;
+    }
+  } @else {
+    @content;
+  }
+}
+
+// Media of at most the maximum breakpoint width. No query for the largest breakpoint.
+// Makes the @content apply to the given breakpoint and narrower.
+@mixin view-width-max($name, $breakpoints: $grid-breakpoints) {
+  $max: breakpoint-max($name, $breakpoints);
+  @if $max {
+    @media (max-width: $max) {
+      @content;
+    }
+  } @else {
+    @content;
+  }
+}
+
+// Media that spans multiple breakpoint widths.
+// Makes the @content apply between the min and max breakpoints
+@mixin view-width-between(
+  $lower,
+  $upper,
+  $breakpoints: $grid-breakpoints
+) {
+  $min: breakpoint-min($lower, $breakpoints);
+  $max: breakpoint-max($upper, $breakpoints);
+
+  @if $min != null and $max != null {
+    @media (min-width: $min) and (max-width: $max) {
+      @content;
+    }
+  } @else if $max == null {
+    @include view-width-min($lower, $breakpoints) {
+      @content;
+    }
+  } @else if $min == null {
+    @include viw-width-max($upper, $breakpoints) {
+      @content;
+    }
+  }
+}
+
+// Media between the breakpoint's minimum and maximum widths.
+// No minimum for the smallest breakpoint, and no maximum for the largest one.
+// Makes the @content apply only to the given breakpoint, not viewports any wider or narrower.
+@mixin view-width-only($name, $breakpoints: $grid-breakpoints) {
+  $min: breakpoint-min($name, $breakpoints);
+  $max: breakpoint-max($name, $breakpoints);
+
+  @if $min != null and $max != null {
+    @media (min-width: $min) and (max-width: $max) {
+      @content;
+    }
+  } @else if $max == null {
+    @include view-width-min($name, $breakpoints) {
+      @content;
+    }
+  } @else if $min == null {
+    @include view-width-max($name, $breakpoints) {
+      @content;
+    }
+  }
+}
+
+@mixin view-ratio($orientation) {
+  @media (orientation: $orientation) {
+    @content;
+  }
+}
+
+@mixin view-device($device) {
+  @if index($device-types, $device) {
+    .pz-#{$device} {
+      @content;
+    }
+  } @else {
+    @error "bad device value";
+  }
+}
+
+// ----------------------------
+// SET TRACKING IN SKETCH UNITS
+// ----------------------------
+@mixin tracking($sketchUnits) {
+  letter-spacing: $sketchUnits + 0px;
+}
+
+// -------------
+// FLEXBOX MIXIN
+// -------------
+@mixin flexbox(
+  $direction: row,
+  $align: center,
+  $justify: center,
+  $wrap: nowrap,
+  $display: flex
+) {
+  display: $display;
+  flex-direction: $direction;
+  align-items: $align;
+  justify-content: $justify;
+  flex-wrap: $wrap;
+}
+
+// -----------------------
+// FONT SIZE & LINE HEIGHT
+// -----------------------
+// https://css-tricks.com/snippets/sass/strip-unit-function/
+@function strip-unit($number) {
+  @if type-of($number) == 'number' and not unitless($number) {
+    @return math.div($number, $number * 0 + 1);
+  }
+
+  @return $number;
+}
+
+@mixin font-size($sizeRaw) {
+  $size: strip-unit($sizeRaw);
+
+  font-size: $size + px;
+  font-size: $size * 0.0625 + rem;
+  line-height: ($size * 1.3) + px;
+  line-height: ($size * 1.3) * 0.0625 + rem;
+}
+
+// Adapted from https://css-tricks.com/snippets/sass/px-to-em-functions/
+$browser-context: 16; // Default
+
+@function rem($pixels, $context: $browser-context) {
+  @return #{$pixels/$context}rem;
+}
+
+// On iOS, the font-size settings can go very high,
+// and the need arises for setting a maximum value in pixels.
+// However, not all browsers support the min syntax,
+// and so we use the non-clamped size as a fallback.
+@mixin font-size-clamp($sizeRelative, $maxSizePixels) {
+  font-size: $sizeRelative;
+  font-size: calc(min(#{$sizeRelative}, #{$maxSizePixels}));
+}
+
+// ------------------
+// CENTERING FRANKLIN
+// ------------------
+// https://css-tricks.com/snippets/sass/strip-unit-function/
+@function strip-unit($number) {
+  @if type-of($number) == 'number' and not unitless($number) {
+    @return math.div($number, $number * 0 + 1);
+  }
+
+  @return $number;
+}
+
+@mixin evenPaddingFranklin($fontSizeRaw, $lineHeightRaw) {
+  $fontSize: strip-unit($fontSizeRaw);
+  $lineHeight: strip-unit($lineHeightRaw);
+  $franklinBottomDescrepancy: 0.23;
+  $bottomSpace: $fontSize * $franklinBottomDescrepancy;
+
+  font-size: $fontSize + px;
+  /* stylelint-disable-next-line custom/playbook-spacing-rules */
+  padding-top: $bottomSpace + px;
+  padding-bottom: 0;
+  line-height: ($lineHeight - $bottomSpace) + px;
+  @include ie11-only {
+    $ieTop: 0.23;
+    $paddingBottom: $fontSize * $ieTop;
+
+    /* stylelint-disable-next-line custom/playbook-spacing-rules */
+    padding-bottom: $paddingBottom + px;
+    padding-top: 0;
+    line-height: ($lineHeight - $paddingBottom) + px;
+  }
+
+  @include edge-only {
+    $edgeTop: 0.21;
+    $paddingBottom: ($fontSize * $edgeTop);
+    /* stylelint-disable-next-line custom/playbook-spacing-rules */
+    padding-bottom: $paddingBottom + px;
+    padding-top: 0;
+    line-height: ($lineHeight - $paddingBottom) + px;
+  }
+}
+
+@mixin firefox-only {
+  @at-root {
+    @-moz-document url-prefix() {
+      & {
+        @content;
+      }
+    }
+  }
+}
+
+@mixin ie11-only {
+  @media all and (-ms-high-contrast: none),
+    (-ms-high-contrast: active) {
+    @content;
+  }
+}
+
+@mixin edge-only {
+  @supports (-ms-ime-align: auto) {
+    @content;
+  }
+}
+
+// Media Queries - Crossword
+@mixin tiny-phone {
+  @media (max-width: $se-width) {
+    @content;
+  }
+}
+
+@mixin old-se-only {
+  @media (max-height: $se-height-3rd-gen) and (max-width: $se-width) {
+    @content;
+  }
+}
+
+@mixin se-only {
+  @media (max-height: $se-height) and (max-width: $se-width) {
+    @content;
+  }
+}
+
+@mixin ipad-mini-only {
+  @media (max-height: $ipad-mini-height) and (min-width: calc(#{$ipad-mini-width} - 1px)) and (max-width: $ipad-mini-width) {
+    @content;
+  }
+}
+
+@mixin galaxy-fold-only {
+  @media (max-height: $galaxy-fold-height) and (max-width: $galaxy-fold-width) {
+    @content;
+  }
+}
+
+@mixin galaxy-fold-unfolded-only {
+  @media (max-height: $galaxy-fold-height_unfolded) and (min-width: calc(#{$galaxy-fold-width_unfolded} - 1px)) and (max-width: $galaxy-fold-width_unfolded) {
+    @content;
+  }
+}
+
+@mixin galaxy-tab-A9-only {
+  @media (max-height: $galaxy-tab-A9-height) and (min-width: calc(#{$galaxy-tab-A9-width} - 1px)) and (max-width: $galaxy-tab-A9-width) {
+    @content;
+  }
+}
+
+@mixin samsung-tablets-landscape {
+  @media (min-width: $samsung-S9-height) and (max-height: $samsung-S6-width) {
+    @content;
+  }
+}
+
+@mixin samsung-S9-only {
+  @media (max-height: $samsung-S9-height) and (min-width: calc(#{$samsung-S9-width} - 1px)) and (max-width: $samsung-S9-width) {
+    @content;
+  }
+}
+@mixin phone {
+  @media (max-width: 499px) {
+    @content;
+  }
+}
+
+@mixin phone-and-tablet {
+  @media (max-width: 1024px) {
+    @content;
+  }
+}
+
+@mixin small-device {
+  @media (max-width: 800px) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media (min-width: 500px) and (max-width: 1024px) {
+    @content;
+  }
+}
+
+@mixin tablet-and-desktop {
+  @media (min-width: 500px) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media (min-width: 1025px) {
+    @content;
+  }
+}
+
+$breakpoints: (
+  xs-max: 575px,
+  sm-min: 576px,
+  sm-max: 767px,
+  md-min: 768px,
+  md-max: 991px,
+  lg-min: 992px,
+  lg-max: 1279px,
+  xl-min: 1280px,
+  xl-max: 1399px,
+  xxl-min: 1400px,
+);
+
+@mixin stretch {
+  height: 100%;
+  left: 0;
+  top: 0;
+  width: 100%;
+}
+
+@mixin nav {
+  .pz-hybrid {
+    .pz-nav {
+      opacity: 0;
+      visibility: hidden;
+    }
+    .pz-nav.show-mobile-toolbar {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+
+  .pz-nav.show-mobile-toolbar {
+    .pz-nav__title {
+      width: 0;
+    }
+  }
+}
+
+// For any game (other than Wordle) using the new moment system.
+// Replaces the nav mixin above.
+@mixin new-moment-system {
+  .pz-games-app,
+  .pz-newsreader {
+    .pz-nav {
+      display: none;
+    }
+
+    .pz-game-screen {
+      height: 100vh;
+    }
+  }
+
+  .pz-game-toolbar {
+    border: none;
+  }
+
+  .pz-moment {
+    height: 100%;
+  }
+
+  .pz-moment__container.alternate {
+    justify-content: space-around;
+  }
+}

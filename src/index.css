@@ -1,0 +1,170 @@
+/* Global styles */
+:root {
+  --yellow: #f6e15c;
+  --green: #b6e388;
+  --blue: #90caf9;
+  --purple: #d1b3ff;
+  --card-bg: #f3f3f3;
+  --card-selected: #2a4dff;
+}
+
+/* Add a pleasant backdrop */
+body {
+  margin: 0;
+  font-family: sans-serif;
+  background: #fafafa;
+  display: flex;
+  justify-content: center;
+}
+
+/* Header */
+.header {
+  font-family: karnak-condensed;
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+/* Solved group bars */
+.solved-group {
+  color: #000;
+  font-weight: 700;
+  padding: 0.75rem;
+  border-radius: 4px;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.solved-group .group-name {
+  font-weight: 800;
+  text-transform: uppercase;
+  margin-bottom: 0.25rem;
+  letter-spacing: 0.2px;
+}
+
+.solved-group .group-words {
+  font-weight: 500;
+  font-size: 0.95rem;
+  letter-spacing: 0.3px;
+}
+.solved-0 { background: var(--yellow); }
+.solved-1 { background: var(--green); }
+.solved-2 { background: var(--blue); }
+.solved-3 { background: var(--purple); }
+
+/* Grid */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem; /* reduced gap for slimmer grid */
+}
+
+.word-card {
+  border: none;
+  /* Reduce horizontal padding to narrow the card width while maintaining height */
+  /* increase vertical padding slightly to make cells taller */
+  padding: 1.45rem 0.5rem;
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+  border-radius: 4px;
+  font-weight: 700;
+  /* Sepia-toned background */
+  background: #f5f0e8;
+  font-size: 1.1rem;
+  letter-spacing: 0.1px;
+  text-transform: uppercase;
+  transition: background 0.2s, color 0.2s, transform 0.05s;
+}
+
+.word-card:hover {
+  transform: scale(1.03);
+}
+
+.word-card.selected {
+  /* Slightly darker sepia tone when selected */
+  background: #d4b48a;
+  color: #fff;
+}
+
+.word-card.solved {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.word-card.shake {
+  animation: shake 0.4s;
+}
+
+@keyframes shake {
+  10%, 90% { transform: translateX(-1px); }
+  20%, 80% { transform: translateX(2px); }
+  30%, 50%, 70% { transform: translateX(-4px); }
+  40%, 60% { transform: translateX(4px); }
+}
+
+.controls {
+  margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.controls button {
+  padding: 0.6rem 1.5rem;
+  border: 1.5px solid #000;
+  background: #ffffff;
+  color: #000;
+  border-radius: 9999px; /* pill shape */
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.controls button:not(:disabled):hover {
+  background: #000;
+  color: #fff;
+}
+
+.controls button:disabled {
+  border-color: #cccccc;
+  color: #666666;
+  background: #f6f6f6;
+  cursor: default;
+}
+
+/* Mistakes section */
+.mistakes-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  font-weight: 600;
+}
+
+.mistakes-label {
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+/* Mistakes indicator */
+.mistakes-dots {
+  display: flex;
+  gap: 0.35rem;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+
+.mistakes-dots .dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #cccccc;
+}
+
+.mistakes-dots .dot.active {
+  background: #333333;
+} 
