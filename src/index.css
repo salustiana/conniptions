@@ -111,7 +111,8 @@ body {
   font-weight: 700;
   /* Sepia-toned background */
   background: #f5f0e8;
-  font-size: clamp(0.75rem, 3.5vw, 1.1rem);
+  /* Adjusted clamp to permit smaller text on very narrow screens */
+  font-size: clamp(0.55rem, 2.8vw, 1.1rem);
   letter-spacing: 0.1px;
   text-transform: uppercase;
   transition: background 0.2s, color 0.2s, transform 0.05s;
