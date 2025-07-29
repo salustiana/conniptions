@@ -1,0 +1,29 @@
+{
+  "name": "conniptions-backend",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "node --env-file .env dist/index.js",
+    "dev": "ts-node-esm src/index.ts",
+    "build": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "bcryptjs": "*",
+    "sqlite3": "^5.1.6",
+    "dotenv": "*",
+    "express": "*",
+    "jsonwebtoken": "*",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "ts-node": "^10.9.2",
+    "@types/express": "^4.17.21",
+    "@types/jsonwebtoken": "^9.0.2",
+    "@types/bcryptjs": "^2.4.2",
+    "@types/node": "^20.11.18",
+    "@types/sqlite3": "^3.1.8",
+    "@types/cors": "^2.8.17"
+  }
+} 

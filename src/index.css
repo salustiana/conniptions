@@ -221,4 +221,106 @@ body {
     opacity: 1;
     transform: translate(-50%, 0);
   }
+}
+
+.auth-form {
+  max-width: 320px;
+  margin: 2rem auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  text-align: center;
+}
+
+.auth-form input {
+  padding: 0.4rem 0.25rem;
+  border: none;
+  border-bottom: 1.5px solid #000;
+  border-radius: 0;
+  font-size: 1rem;
+  width: 100%;
+  background: transparent;
+  margin-bottom: 1rem;
+}
+
+.auth-form input:focus {
+  outline: none;
+  border-bottom-color: #2a4dff;
+}
+
+.auth-form button {
+  padding: 0.5rem 1rem;
+  border: 1.5px solid #000;
+  background: #fff;
+  border-radius: 9999px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.auth-form .link {
+  background: none;
+  border: none;
+  color: #0077cc;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.form-error {
+  color: #d33;
+  font-size: 0.9rem;
+}
+
+/* Auth popup positioning */
+.auth-popup {
+  position: absolute;
+  top: 4rem;
+  right: 2rem;
+  background: #fff;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  border-radius: 6px;
+  padding: 1rem;
+  z-index: 1200;
+}
+
+.auth-top {
+  position: absolute;
+  top: 1.5rem;
+  right: 2rem;
+  font-size: 0.9rem;
+}
+
+.pill-btn {
+  padding: 0.6rem 1.5rem;
+  border: 1.5px solid #000;
+  background: #ffffff;
+  color: #000;
+  border-radius: 9999px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.pill-btn:hover {
+  background: #000;
+  color: #fff;
+}
+
+.auth-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.auth-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.15);
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding: 4rem 2rem 0 0;
+  z-index: 1100;
 } 

@@ -1,5 +1,9 @@
 import React, { useMemo, useState } from "react";
 import WordCard from "./components/WordCard";
+import AuthForm from "./components/AuthForm";
+import { useAuth } from "./context/AuthContext";
+import { Routes, Route, Link } from "react-router-dom";
+import UserPage from "./pages/UserPage";
 import { Group } from "./types";
 import { todaysPuzzle } from "./puzzles";
 import "./index.scss";
@@ -13,6 +17,8 @@ function arraysEqual(a: string[], b: string[]) {
 }
 
 const App: React.FC = () => {
+  const { user, logout } = useAuth();
+  const [showAuth, setShowAuth] = useState<"login" | "signup" | null>(null);
   const [solved, setSolved] = useState<Group[]>([]);
   const [selected, setSelected] = useState<string[]>([]);
   const [mistakes, setMistakes] = useState(0);
@@ -114,63 +120,103 @@ const App: React.FC = () => {
   return (
     <div>
       {toast && <div className="toast">{toast}</div>}
-      <header className="top-bar">
-        <h1 className="title">Conniptions</h1>
-        {todaysPuzzle.date && <span className="date">{todaysPuzzle.date}</span>}
-      </header>
-      <p className="subtitle">Create four groups of four!</p>
 
-      <div className="game-core">
-        {groupsToShow.map((g) => (
-          <div key={g.name} className={`solved-group solved-${g.difficulty}`}>
-            <div className="group-name">{g.name}</div>
-            <div className="group-words">{g.words.join(", ")}</div>
-          </div>
-        ))}
-
-        {!won && !lost && (
-          <div className="grid">
-            {order.map((word) => (
-              <WordCard
-                key={word}
-                text={word}
-                selected={selected.includes(word)}
-                solved={false}
-                shake={shakeWords.includes(word)}
-                onClick={() => toggleWord(word)}
-              />
-            ))}
+      {/* Top-right auth button */}
+      <div className="auth-top">
+        {user ? (
+          <span>
+            <Link to="/me" className="link">{user}</Link> · {" "}
+            <button className="pill-btn" onClick={logout}>Log out</button>
+          </span>
+        ) : (
+          <div className="auth-buttons">
+            <button className="pill-btn" onClick={() => setShowAuth("login")}>Log In</button>
+            <button className="pill-btn" onClick={() => setShowAuth("signup")}>Sign Up</button>
           </div>
         )}
+      </div>
 
-        <div className="controls">
-          <button onClick={shuffle} disabled={won || lost}>Shuffle</button>
-          <button onClick={deselect} disabled={selected.length === 0 || won || lost}>
-            Deselect All
-          </button>
-          <button
-            onClick={submit}
-            disabled={selected.length !== 4 || won || lost}
+      {(!user && showAuth) && (
+        <div
+          className="auth-overlay"
+          onClick={() => setShowAuth(null)}
+        >
+          <div
+            className="auth-popup"
+            onClick={(e) => e.stopPropagation()}
           >
-            Submit
-          </button>
-        </div>
-
-        <div className="mistakes-wrapper">
-          <span className="mistakes-label">Mistakes Remaining:</span>
-          <div className="mistakes-dots">
-            {Array.from({ length: MAX_MISTAKES }, (_, i) => (
-              <span
-                key={i}
-                className={`dot ${i < MAX_MISTAKES - mistakes ? "active" : ""}`}
-              />
-            ))}
+            <AuthForm
+              initialMode={showAuth}
+              onSuccess={() => setShowAuth(null)}
+            />
           </div>
         </div>
+      )}
 
-        {lost && <h2>Disappointment.</h2>}
-        {won && <h2>Congratulation.</h2>}
-      </div>
+      {/* Game core always visible */}
+
+          <header className="top-bar">
+            <h1 className="title">Conniptions</h1>
+            {todaysPuzzle.date && <span className="date">{todaysPuzzle.date}</span>}
+          </header>
+          <p className="subtitle">Create four groups of four!</p>
+
+      <Routes>
+        <Route path="/" element={
+          <div className="game-core">
+            {groupsToShow.map((g) => (
+              <div key={g.name} className={`solved-group solved-${g.difficulty}`}>
+                <div className="group-name">{g.name}</div>
+                <div className="group-words">{g.words.join(", ")}</div>
+              </div>
+            ))}
+
+            {!won && !lost && (
+              <div className="grid">
+                {order.map((word) => (
+                  <WordCard
+                    key={word}
+                    text={word}
+                    selected={selected.includes(word)}
+                    solved={false}
+                    shake={shakeWords.includes(word)}
+                    onClick={() => toggleWord(word)}
+                  />
+                ))}
+              </div>
+            )}
+
+            <div className="controls">
+              <button onClick={shuffle} disabled={won || lost}>Shuffle</button>
+              <button onClick={deselect} disabled={selected.length === 0 || won || lost}>
+                Deselect All
+              </button>
+              <button
+                onClick={submit}
+                disabled={selected.length !== 4 || won || lost}
+              >
+                Submit
+              </button>
+            </div>
+
+            <div className="mistakes-wrapper">
+              <span className="mistakes-label">Mistakes Remaining:</span>
+              <div className="mistakes-dots">
+                {Array.from({ length: MAX_MISTAKES }, (_, i) => (
+                  <span
+                    key={i}
+                    className={`dot ${i < MAX_MISTAKES - mistakes ? "active" : ""}`}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {lost && <h2>You lost! Refresh to play again.</h2>}
+            {won && <h2>Congratulations! You solved it.</h2>}
+          </div>
+        } />
+        <Route path="/me" element={<UserPage />} />
+      </Routes>
     </div>
   );
 };
