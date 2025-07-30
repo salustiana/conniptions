@@ -18,6 +18,17 @@ body {
   padding-right: 2rem;
 }
 
+/* Responsive tweaks for narrow screens */
+@media (max-width: 600px) {
+  body {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  .top-bar {
+    left: 1rem;
+  }
+}
+
 /* Top bar */
 .top-bar {
   position: absolute;
@@ -83,7 +94,8 @@ body {
 /* Grid */
 .grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  /* Allow the grid to shrink below the intrinsic min-content size of each word so that it never forces horizontal scrolling. */
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 0.5rem; /* reduced gap for slimmer grid */
 }
 
@@ -99,10 +111,13 @@ body {
   font-weight: 700;
   /* Sepia-toned background */
   background: #f5f0e8;
-  font-size: 1.1rem;
+  /* Adjusted clamp to permit smaller text on very narrow screens */
+  font-size: clamp(0.55rem, 2.8vw, 1.1rem);
   letter-spacing: 0.1px;
   text-transform: uppercase;
   transition: background 0.2s, color 0.2s, transform 0.05s;
+  word-wrap: normal;
+  overflow-wrap: normal;
 }
 
 .word-card:hover {
